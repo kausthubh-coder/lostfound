@@ -94,43 +94,45 @@ export default function MapView() {
   )), [items]);
 
   return (
-    <div className="h-screen w-full">
-      <Map
-        {...viewState}
-        onMove={evt => setViewState(evt.viewState)}
-        style={{ width: '100%', height: '100%' }}
-        mapStyle="mapbox://styles/mapbox/dark-v11"
-        mapboxAccessToken={MAPBOX_TOKEN}
-        reuseMaps
-      >
-        <NavigationControl position="top-right" />
-        
-        {markers}
+    <div className="min-h-[calc(100vh-4rem)] bg-gray-900 p-4 pb-20">
+      <div className="h-[calc(100vh-6rem)] w-full rounded-2xl overflow-hidden border border-gray-800 shadow-xl">
+        <Map
+          {...viewState}
+          onMove={evt => setViewState(evt.viewState)}
+          style={{ width: '100%', height: '100%' }}
+          mapStyle="mapbox://styles/mapbox/dark-v11"
+          mapboxAccessToken={MAPBOX_TOKEN}
+          reuseMaps
+        >
+          <NavigationControl position="top-right" />
+          
+          {markers}
 
-        {selectedItem && (
-          <Popup
-            latitude={selectedItem.coordinates.latitude}
-            longitude={selectedItem.coordinates.longitude}
-            anchor="bottom"
-            onClose={() => setSelectedItem(null)}
-            closeOnClick={false}
-            offset={25}
-          >
-            <div className="p-2 max-w-xs">
-              <img 
-                src={selectedItem.image} 
-                alt={selectedItem.title} 
-                className="w-full h-32 object-cover rounded-lg mb-2"
-              />
-              <h3 className="font-bold text-lg">{selectedItem.title}</h3>
-              <p className="text-sm">{selectedItem.description}</p>
-              <p className="text-sm text-gray-500 mt-2">
-                Location: {selectedItem.lostlocation}
-              </p>
-            </div>
-          </Popup>
-        )}
-      </Map>
+          {selectedItem && (
+            <Popup
+              latitude={selectedItem.coordinates.latitude}
+              longitude={selectedItem.coordinates.longitude}
+              anchor="bottom"
+              onClose={() => setSelectedItem(null)}
+              closeOnClick={false}
+              offset={25}
+            >
+              <div className="p-2 max-w-xs">
+                <img 
+                  src={selectedItem.image} 
+                  alt={selectedItem.title} 
+                  className="w-full h-32 object-cover rounded-lg mb-2"
+                />
+                <h3 className="font-bold text-lg">{selectedItem.title}</h3>
+                <p className="text-sm">{selectedItem.description}</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Location: {selectedItem.lostlocation}
+                </p>
+              </div>
+            </Popup>
+          )}
+        </Map>
+      </div>
 
       <style>
         {`
