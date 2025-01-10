@@ -7,10 +7,10 @@ import { db } from '../firebase';
 interface Chat {
   id: string;
   participants: string[];
-  lastMessage: string;
-  lastMessageTime: Date;
-  otherUserName: string;
-  otherUserPhoto: string;
+  lastMessage?: string;
+  lastMessageTime?: Date;
+  otherUserName?: string;
+  otherUserPhoto?: string;
 }
 
 interface Message {
@@ -18,6 +18,18 @@ interface Message {
   text: string;
   senderId: string;
   timestamp: Date;
+}
+
+// First, let's create an interface for the raw chat data
+interface ChatData {
+  id: string;
+  participants: string[];
+  lastMessage: string;
+  lastMessageTime: {
+    toDate: () => Date;
+  };
+  otherUserName: string;
+  otherUserPhoto: string;
 }
 
 export default function Messages() {
@@ -92,13 +104,24 @@ export default function Messages() {
 
         return {
           id: doc.id,
-          ...data,
+          participants: data.participants || [],
+          lastMessage: data.lastMessage || '',
+          lastMessageTime: data.lastMessageTime,
           otherUserName: userData?.displayName || 'Unknown User',
           otherUserPhoto: userData?.photoURL || ''
-        };
+        } as ChatData;
       }));
 
-      setChats(chatsData);
+      const formattedChats: Chat[] = chatsData.map(doc => ({
+        id: doc.id,
+        participants: doc.participants,
+        lastMessage: doc.lastMessage,
+        lastMessageTime: doc.lastMessageTime ? doc.lastMessageTime.toDate() : new Date(),
+        otherUserName: doc.otherUserName,
+        otherUserPhoto: doc.otherUserPhoto
+      }));
+
+      setChats(formattedChats);
     });
 
     return () => unsubscribe();
@@ -177,7 +200,7 @@ export default function Messages() {
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
                     <span className="text-lg text-gray-300">
-                      {chat.otherUserName.charAt(0)}
+                      {chat.otherUserName?.charAt(0) || '?'}
                     </span>
                   </div>
                 )}
@@ -211,7 +234,7 @@ export default function Messages() {
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
                     <span className="text-lg text-gray-300">
-                      {chats.find(c => c.id === selectedChat)?.otherUserName.charAt(0)}
+                      {chats.find(c => c.id === selectedChat)?.otherUserName?.charAt(0) || '?'}
                     </span>
                   </div>
                 )}
